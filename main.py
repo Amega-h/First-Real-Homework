@@ -32,6 +32,42 @@ class Student:
 
         lecturer.rate_lecture(subject, rating)
 
+    def __average(self):
+        all_grades = []
+
+        for subject_grades in self.grades.values():
+            all_grades.extend(subject_grades)
+
+        if len(all_grades) == 0:
+            return 0
+        else:
+            return sum(all_grades) / len(all_grades)
+
+    def __eq__(self, other):
+        if isinstance(other, Student):
+            return self.__average() == other.__average()
+        if isinstance(other, (int,float)):
+            return self.__average() == other
+
+    def __lt__(self, other):
+        if isinstance(other, Student):
+            return self.__average() < other.__average()
+        if isinstance(other, (int,float)):
+            return self.__average() < other
+
+    def __gt__(self, other):
+        if isinstance(other, Student):
+            return self.__average() > other.__average()
+        if isinstance(other, (int,float)):
+            return self.__average() > other
+
+    def __str__(self):
+        return (f'Name: {self.name}\n'
+                f'Surname: {self.surname}\n'
+                f'Average homeworks grade: {self.__average}\n'
+                f'Courses in progress: {", ".join(self.courses_in_progress)}\n'
+                f'Finished courses: {", ".join(self.finished_courses)} ')
+
 
 
 class Mentor:
@@ -48,17 +84,56 @@ class Lecturer(Mentor):
 
     def rate_lecture(self, subject, rating):
         if subject in self.courses_attached :
-            self.grades[subject] = rating
+            if subject in self.grades:
+                self.grades[subject] += [rating]
+            else:
+                self.grades[subject] = [rating]
         else:
             print("Lecturer must be part of the course")
 
 
+    def __average(self):
+        all_grades = []
 
+        for subject_grades in self.grades.values():
+            all_grades.extend(subject_grades)
+
+        if len(all_grades) == 0:
+            return 0
+        else:
+            return sum(all_grades) / len(all_grades)
+
+    def __str__(self):
+        return  (f'Name: {self.name}\n'
+                f'Surname: {self.surname}\n'
+                f'Average grade: {self.__average}')
+
+    def __eq__(self, other):
+        if isinstance(other, Lecturer):
+            return self.__average() == other.__average()
+        if isinstance(other, (int,float)):
+            return self.__average() == other
+
+    def __lt__(self, other):
+        if isinstance(other, Lecturer):
+            return self.__average() < other.__average()
+        if isinstance(other, (int,float)):
+            return self.__average() < other
+
+    def __gt__(self, other):
+        if isinstance(other, Lecturer):
+            return self.__average() > other.__average()
+        if isinstance(other, (int,float)):
+            return self.__average() > other
 
 
 class Reviewer(Mentor):
     def __init__(self, name, surname):
         super().__init__(name, surname)
+
+
+    def __str__(self):
+        print(f'Name: {self.name}\nSurname: {self.surname}')
 
     def rate_hw(self, student, course, grade):
         if isinstance(student, Student) and course in self.courses_attached and course in student.courses_in_progress :
@@ -70,17 +145,15 @@ class Reviewer(Mentor):
             return "Error"
 
 
-lecturer = Lecturer('Иван', 'Иванов')
-reviewer = Reviewer('Пётр', 'Петров')
-student = Student('Алёхина', 'Ольга', 'Ж')
 
-student.courses_in_progress += ['Python', 'Java']
-lecturer.courses_attached += ['Python', 'C++']
-reviewer.courses_attached += ['Python', 'C++']
+student1 = Student('Алёхина', 'Ольга', 'Ж')
 
-print(student.rate_lecture(lecturer, 'Python', 7))  # None
-print(student.rate_lecture(lecturer, 'Java', 8))  # Ошибка
-print(student.rate_lecture(lecturer, 'С++', 8))  # Ошибка
-print(student.rate_lecture(reviewer, 'Python', 6))  # Ошибка
+student1.grades["Python"] = [10, 20, 30]
+student1.courses_in_progress = ["Python"]
 
-print(lecturer.grades)  # {'Python': [7]}
+student2 = Student('Алёхина', 'Ольга', 'Ж')
+
+student2.grades["Python"] = [10, 20, 30]
+student2.courses_in_progress = ["Python"]
+
+print(student1 < student2)
