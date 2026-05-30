@@ -22,7 +22,7 @@ class Student:
             print("Second argument must be a string")
             return
 
-        if not ((rating > 0) and (rating < 10)):
+        if not ((rating > 0) and (rating <= 10)):
             print("Third argument must be between 0 and 10")
             return
 
@@ -32,7 +32,7 @@ class Student:
 
         lecturer.rate_lecture(subject, rating)
 
-    def __average(self):
+    def average(self):
         all_grades = []
 
         for subject_grades in self.grades.values():
@@ -45,26 +45,26 @@ class Student:
 
     def __eq__(self, other):
         if isinstance(other, Student):
-            return self.__average() == other.__average()
+            return self.average() == other.average()
         if isinstance(other, (int,float)):
-            return self.__average() == other
+            return self.average() == other
 
     def __lt__(self, other):
         if isinstance(other, Student):
-            return self.__average() < other.__average()
+            return self.average() < other.average()
         if isinstance(other, (int,float)):
-            return self.__average() < other
+            return self.average() < other
 
     def __gt__(self, other):
         if isinstance(other, Student):
-            return self.__average() > other.__average()
+            return self.average() > other.average()
         if isinstance(other, (int,float)):
-            return self.__average() > other
+            return self.average() > other
 
     def __str__(self):
         return (f'Name: {self.name}\n'
                 f'Surname: {self.surname}\n'
-                f'Average homeworks grade: {self.__average}\n'
+                f'Average homeworks grade: {self.average}\n'
                 f'Courses in progress: {", ".join(self.courses_in_progress)}\n'
                 f'Finished courses: {", ".join(self.finished_courses)} ')
 
@@ -92,7 +92,7 @@ class Lecturer(Mentor):
             print("Lecturer must be part of the course")
 
 
-    def __average(self):
+    def average(self):
         all_grades = []
 
         for subject_grades in self.grades.values():
@@ -106,25 +106,25 @@ class Lecturer(Mentor):
     def __str__(self):
         return  (f'Name: {self.name}\n'
                 f'Surname: {self.surname}\n'
-                f'Average grade: {self.__average}')
+                f'Average grade: {self.average}')
 
     def __eq__(self, other):
         if isinstance(other, Lecturer):
-            return self.__average() == other.__average()
+            return self.average() == other.average()
         if isinstance(other, (int,float)):
-            return self.__average() == other
+            return self.average() == other
 
     def __lt__(self, other):
         if isinstance(other, Lecturer):
-            return self.__average() < other.__average()
+            return self.average() < other.average()
         if isinstance(other, (int,float)):
-            return self.__average() < other
+            return self.average() < other
 
     def __gt__(self, other):
         if isinstance(other, Lecturer):
-            return self.__average() > other.__average()
+            return self.average() > other.average()
         if isinstance(other, (int,float)):
-            return self.__average() > other
+            return self.average() > other
 
 
 class Reviewer(Mentor):
@@ -145,15 +145,59 @@ class Reviewer(Mentor):
             return "Error"
 
 
+def calculate_avg_homework_grade(students,course):
+    summary = 0
+    length = 0
+    if not len(students) == 0:
+        for student in students:
+            if course in student.courses_in_progress and course in student.grades:
+                grades = student.grades[course]
+                if grades :
+                    summary += sum(grades) / len(grades)
+                    length += 1
+    else :
+        print("List of students is empty")
+        return
+    return summary / length
+
+
+def calculate_avg_lecture_grade(lecturers,course):
+    summary = 0
+    length = 0
+    if not len(lecturers) == 0:
+        for lecturer in lecturers:
+            if course in lecturer.courses_attached and course in lecturer.grades:
+                grades = lecturer.grades[course]
+                if grades :
+                    summary += sum(grades) / len(grades)
+                    length += 1
+    else :
+        print("List of lecturers is empty")
+        return
+    return summary / length
+
 
 student1 = Student('Алёхина', 'Ольга', 'Ж')
 
-student1.grades["Python"] = [10, 20, 30]
+student1.grades["Python"] = [3, 2, 2]
 student1.courses_in_progress = ["Python"]
 
-student2 = Student('Алёхина', 'Ольга', 'Ж')
+student2 = Student('Алёхин', 'Виталий', 'М')
 
-student2.grades["Python"] = [10, 20, 30]
+student2.grades["Python"] = [8, 6, 9]
 student2.courses_in_progress = ["Python"]
 
-print(student1 < student2)
+
+lecturer1 = Lecturer('Jack','Smith')
+lecturer1.courses_attached = ["Python"]
+student1.rate_lecture(lecturer1, "Python", 4)
+student1.rate_lecture(lecturer1, "Python", 6)
+
+
+lecturer2 = Lecturer('Anton','Sokolov')
+lecturer2.courses_attached = ["Python"]
+student2.rate_lecture(lecturer2, "Python", 8)
+student2.rate_lecture(lecturer2, "Python", 10)
+
+print(calculate_avg_homework_grade([student1,student2],"Python"))
+print(calculate_avg_lecture_grade([lecturer1,lecturer2],"Python"))
