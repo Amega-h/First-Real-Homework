@@ -14,6 +14,7 @@ class Student:
         self.finished_courses.append(course_name)
 
     def rate_lecture(self, lecturer, subject, rating):
+
         if not isinstance(lecturer, Lecturer):
             print("First argument must be a Lecturer")
             return
@@ -30,6 +31,7 @@ class Student:
             print("Second argument must be a student`s course")
             return
 
+        # check for correct course is made in Lecturer class. It answers OOP requests better.
         lecturer.rate_lecture(subject, rating)
 
     def average(self):
@@ -64,7 +66,7 @@ class Student:
     def __str__(self):
         return (f'Name: {self.name}\n'
                 f'Surname: {self.surname}\n'
-                f'Average homeworks grade: {self.average}\n'
+                f'Average homeworks grade: {self.average():.2f}\n'
                 f'Courses in progress: {", ".join(self.courses_in_progress)}\n'
                 f'Finished courses: {", ".join(self.finished_courses)} ')
 
@@ -106,7 +108,7 @@ class Lecturer(Mentor):
     def __str__(self):
         return  (f'Name: {self.name}\n'
                 f'Surname: {self.surname}\n'
-                f'Average grade: {self.average}')
+                f'Average grade: {self.average():.2f}')
 
     def __eq__(self, other):
         if isinstance(other, Lecturer):
@@ -133,7 +135,8 @@ class Reviewer(Mentor):
 
 
     def __str__(self):
-        print(f'Name: {self.name}\nSurname: {self.surname}')
+        return (f'Name: {self.name}\n'
+                f'Surname: {self.surname}')
 
     def rate_hw(self, student, course, grade):
         if isinstance(student, Student) and course in self.courses_attached and course in student.courses_in_progress :
@@ -142,6 +145,7 @@ class Reviewer(Mentor):
             else :
                 student.grades[course] = [grade]
         else:
+            print("During homework rating a error occurred")
             return "Error"
 
 
@@ -198,6 +202,28 @@ lecturer2 = Lecturer('Anton','Sokolov')
 lecturer2.courses_attached = ["Python"]
 student2.rate_lecture(lecturer2, "Python", 8)
 student2.rate_lecture(lecturer2, "Python", 10)
+
+
+reviewer1 = Reviewer('Gleb','Glebovich')
+reviewer1.courses_attached = ["Python"]
+reviewer2 = Reviewer('Hleb','Hlebovich')
+reviewer2.courses_attached = ["Python"]
+
+
+reviewer1.rate_hw(student1, "Python", 4)
+reviewer2.rate_hw(student2, "Python", 6)
+
+
+reviewer1.rate_hw(student1, "Java", 4)
+
+
+
+print(student1)
+print(student2)
+print(reviewer1)
+print(reviewer2)
+print(lecturer1)
+print(lecturer2)
 
 print(calculate_avg_homework_grade([student1,student2],"Python"))
 print(calculate_avg_lecture_grade([lecturer1,lecturer2],"Python"))
